@@ -1,0 +1,9 @@
+const Project = require("../models/Project");
+const Building = require("../models/Building");
+
+async function listBuildings(req, res, next) { try { const project = await Project.findById(req.params.projectId); if (!project) return res.status(404).json({ success: false, message: "Project not found" }); const data = await Building.find({ projectId: project._id }).populate("projectId", "name location"); res.json({ success: true, data, total: data.length }); } catch (error) { next(error); } }
+async function createBuilding(req, res, next) { try { const project = await Project.findById(req.params.projectId); if (!project) return res.status(404).json({ success: false, message: "Project not found" }); const data = await Building.create({ ...req.body, projectId: project._id }); res.status(201).json({ success: true, message: "Building created successfully", data }); } catch (error) { next(error); } }
+async function updateBuilding(req, res, next) { try { const data = await Building.findByIdAndUpdate(req.params.id, { name: req.body.name }, { new: true, runValidators: true }); if (!data) return res.status(404).json({ success: false, message: "Building not found" }); res.json({ success: true, message: "Building updated successfully", data }); } catch (error) { next(error); } }
+async function deleteBuilding(req, res, next) { try { const data = await Building.findByIdAndDelete(req.params.id); if (!data) return res.status(404).json({ success: false, message: "Building not found" }); res.json({ success: true, message: "Building deleted successfully" }); } catch (error) { next(error); } }
+
+module.exports = { listBuildings, createBuilding, updateBuilding, deleteBuilding };

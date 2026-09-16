@@ -1,0 +1,9 @@
+const Building = require("../models/Building");
+const Unit = require("../models/Unit");
+
+async function listUnits(req, res, next) { try { const building = await Building.findById(req.params.buildingId); if (!building) return res.status(404).json({ success: false, message: "Building not found" }); const filter = { buildingId: building._id }; if (req.query.status) filter.status = req.query.status; const data = await Unit.find(filter).populate({ path: "buildingId", populate: { path: "projectId", select: "name location" } }); res.json({ success: true, data, total: data.length }); } catch (error) { next(error); } }
+async function createUnit(req, res, next) { try { const building = await Building.findById(req.params.buildingId); if (!building) return res.status(404).json({ success: false, message: "Building not found" }); const data = await Unit.create({ ...req.body, buildingId: building._id }); res.status(201).json({ success: true, message: "Unit created successfully", data }); } catch (error) { next(error); } }
+async function updateUnit(req, res, next) { try { const data = await Unit.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }); if (!data) return res.status(404).json({ success: false, message: "Unit not found" }); res.json({ success: true, message: "Unit updated successfully", data }); } catch (error) { next(error); } }
+async function deleteUnit(req, res, next) { try { const data = await Unit.findByIdAndDelete(req.params.id); if (!data) return res.status(404).json({ success: false, message: "Unit not found" }); res.json({ success: true, message: "Unit deleted successfully" }); } catch (error) { next(error); } }
+
+module.exports = { listUnits, createUnit, updateUnit, deleteUnit };
