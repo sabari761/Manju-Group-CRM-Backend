@@ -1,7 +1,11 @@
 const swaggerDocument = {
     openapi: "3.0.0",
     info: { title: "Real Estate CRM API", version: "1.0.0", description: "Backend API for the Real Estate CRM." },
-    servers: [{ url: "http://localhost:5000" }],
+    servers: [
+    {
+        url: process.env.API_URL || "http://localhost:5000"
+    }
+],
     components: {
         securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" }, setupKey: { type: "apiKey", in: "header", name: "X-Setup-Key", description: "One-time key from INITIAL_ADMIN_SETUP_KEY" } },
         schemas: {
